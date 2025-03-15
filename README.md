@@ -1,4 +1,4 @@
-# open interview coder
+# Open Interview Coder
 
 You know about the Interview Coder guy who made invisible AI window? I don't like the fact that he taking advantage of poor job market and rip off poor students. I rather make a fair game for everyone. His whole thing was based on 1 functionality: `setContentProtection` from electron https://www.electronjs.org/docs/latest/api/browser-window
 
