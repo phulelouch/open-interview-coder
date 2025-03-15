@@ -7,7 +7,7 @@ You know about the Interview Coder guy who made invisible AI window? I don't lik
 npm run build
 npm start
 ```
-oh and I forgot, what he say: `F**k Interview Coder` hahaha
+oh and I forgot, what he say: `F Interview Coder` hahaha
 
 ![Discord](https://github.com/user-attachments/assets/bae3cba3-a358-4fbb-b965-79f195a48bc0)
 
