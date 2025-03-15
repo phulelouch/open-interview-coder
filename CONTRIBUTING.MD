@@ -38,16 +38,12 @@ cd `to the project folder`
 
 
 
-### Add your profile to the KB
-First thing's first, lets add your personal profile to the KB so that your article will link to your deets, and people can easily find all of your awesome contributions!
-
 * Start by creating a new branch for the feature you're adding.
 
 * It is good practice to never push straight to the master branch. Name your new branch something that makes sense.*
 ```
 git checkout -b new_profile
 ```
-
 
 * Index the new file you've just created, staging it for the next commit.
 ```
