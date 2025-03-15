@@ -10,6 +10,12 @@ npm start
 ```
 oh and I forgot, what he say: `F Interview Coder` hahaha
 
-![Discord](https://github.com/user-attachments/assets/bae3cba3-a358-4fbb-b965-79f195a48bc0)
+#### Invisible from Google Meet:
 
 ![Google Meet](https://github.com/user-attachments/assets/9a3db4df-edad-4056-be52-082a902c664d)
+
+#### Invisible from Discord
+
+![Discord](https://github.com/user-attachments/assets/bae3cba3-a358-4fbb-b965-79f195a48bc0)
+
+
