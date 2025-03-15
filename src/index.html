@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ChatGPT Frontend</title>
+  </head>
+  <body style="margin: 40px; font-family: sans-serif; background: rgba(0,0,0,0.3); color: #fff;">
+    <h1>Electron + ChatGPT Demo</h1>
+    <div>
+      <label for="userInput">Prompt:</label>
+      <input type="text" id="userInput" style="width: 300px;" />
+      <button id="sendBtn">Send</button>
+    </div>
+    <div id="responseContainer" style="margin-top: 20px; white-space: pre-wrap;"></div>
+
+    <script>
+      const userInput = document.getElementById('userInput');
+      const sendBtn = document.getElementById('sendBtn');
+      const responseContainer = document.getElementById('responseContainer');
+
+      sendBtn.addEventListener('click', async () => {
+        const prompt = userInput.value.trim();
+        if (!prompt) return;
+
+        responseContainer.textContent = 'Loading...';
+        try {
+          const reply = await window.electronAPI.sendPrompt(prompt);
+          responseContainer.textContent = reply;
+        } catch (error) {
+          responseContainer.textContent = `Error: ${error.message}`;
+        }
+      });
+    </script>
+  </body>
+</html>
