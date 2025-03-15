@@ -1,5 +1,5 @@
 # hidden-gpt
-You know about the Interview Coder guy who hide the AI? I don't like the fact that he taking advantage of poor job market and rip off poor students. I rather make a fair game for everyone. His whole thing was based on 1 functionality: `setContentProtection` from electron https://www.electronjs.org/docs/latest/api/browser-window
+You know about the Interview Coder guy who made invisible AI window? I don't like the fact that he taking advantage of poor job market and rip off poor students. I rather make a fair game for everyone. His whole thing was based on 1 functionality: `setContentProtection` from electron https://www.electronjs.org/docs/latest/api/browser-window
 
 - Use node 20.19.0
 - Test on Google Meet, Discord and screenshots
