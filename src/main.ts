@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, IpcMainInvokeEvent } from 'electron';
+import { app, BrowserWindow, ipcMain, IpcMainInvokeEvent, globalShortcut } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import * as dotenv from 'dotenv';
@@ -13,20 +13,19 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    show: false, // Window is initially closed (hidden)
 
-    // For a translucent, blurred background
-    backgroundColor: '#00000000',
-    vibrancy: 'under-window',
-
-    // Frameless window
-    frame: false,
+    // Enable transparent window
     transparent: true,
+    backgroundColor: '#00000000',
+    frame: false,
+    titleBarStyle: 'customButtonsOnHover', // Allows custom buttons at the top
 
     // WebPreferences
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
       nodeIntegration: false,
-      contextIsolation: true
     }
   });
 
@@ -96,8 +95,28 @@ ipcMain.handle('chatgpt-request', async (_event: IpcMainInvokeEvent, prompt: str
   }
 });
 
+ipcMain.on('close-window', () => {
+  mainWindow?.close();
+});
+
+ipcMain.on('hide-window', () => {
+  mainWindow?.hide();
+});
+
 app.whenReady().then(() => {
   createWindow();
+  console.log("Cmd/Ctrl+Shift+A pressed: toggling window visibility");
+
+  // Register global shortcut for CommandOrControl+Shift+A to toggle window visibility
+  globalShortcut.register('CommandOrControl+Shift+A', () => {
+    if (!mainWindow) {
+      createWindow();
+    } else if (mainWindow.isVisible()) {
+      mainWindow.hide();
+    } else {
+      mainWindow.show();
+    }
+  });
 
   // On macOS, re-create a window when clicking the dock icon if none open
   app.on('activate', () => {
@@ -108,4 +127,8 @@ app.whenReady().then(() => {
 // Quit when all windows are closed, except on macOS
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
+});
+
+app.on('will-quit', () => {
+  globalShortcut.unregisterAll();
 });

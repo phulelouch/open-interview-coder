@@ -48,17 +48,17 @@ function createWindow() {
     mainWindow = new electron_1.BrowserWindow({
         width: 800,
         height: 600,
-        // For a translucent, blurred background
-        backgroundColor: '#00000000',
-        vibrancy: 'under-window',
-        // Frameless window
-        frame: false,
+        show: false, // Window is initially closed (hidden)
+        // Enable transparent window
         transparent: true,
+        backgroundColor: '#00000000',
+        frame: false,
+        titleBarStyle: 'customButtonsOnHover', // Allows custom buttons at the top
         // WebPreferences
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
+            contextIsolation: true,
             nodeIntegration: false,
-            contextIsolation: true
         }
     });
     //
@@ -117,8 +117,27 @@ electron_1.ipcMain.handle('chatgpt-request', async (_event, prompt) => {
         throw new Error(`Failed to fetch from OpenAI: ${error.message}`);
     }
 });
+electron_1.ipcMain.on('close-window', () => {
+    mainWindow?.close();
+});
+electron_1.ipcMain.on('hide-window', () => {
+    mainWindow?.hide();
+});
 electron_1.app.whenReady().then(() => {
     createWindow();
+    console.log("Cmd/Ctrl+Shift+A pressed: toggling window visibility");
+    // Register global shortcut for CommandOrControl+Shift+A to toggle window visibility
+    electron_1.globalShortcut.register('CommandOrControl+Shift+A', () => {
+        if (!mainWindow) {
+            createWindow();
+        }
+        else if (mainWindow.isVisible()) {
+            mainWindow.hide();
+        }
+        else {
+            mainWindow.show();
+        }
+    });
     // On macOS, re-create a window when clicking the dock icon if none open
     electron_1.app.on('activate', () => {
         if (electron_1.BrowserWindow.getAllWindows().length === 0)
@@ -129,4 +148,7 @@ electron_1.app.whenReady().then(() => {
 electron_1.app.on('window-all-closed', () => {
     if (process.platform !== 'darwin')
         electron_1.app.quit();
+});
+electron_1.app.on('will-quit', () => {
+    electron_1.globalShortcut.unregisterAll();
 });
