@@ -16,9 +16,9 @@ Cmd/Ctrl+Shift+A pressed: toggling window visibility
 oh and I forgot, what he say: `F Interview Coder` hahaha
 
 Future feature:
-[] more beautiful?
-[] screenshot
-[] voice
+- [ ] more beautiful?
+- [ ] screenshot
+- [ ] voice
 
 
 #### Invisible from Google Meet:
