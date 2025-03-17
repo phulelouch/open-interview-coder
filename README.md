@@ -8,7 +8,18 @@ You know about the Interview Coder guy who made invisible AI window? 🫠🫠�
 npm run build
 npm start
 ```
+
+```
+Cmd/Ctrl+Shift+A pressed: toggling window visibility
+```
+
 oh and I forgot, what he say: `F Interview Coder` hahaha
+
+Future feature:
+[] more beautiful?
+[] screenshot
+[] voice
+
 
 #### Invisible from Google Meet:
 
