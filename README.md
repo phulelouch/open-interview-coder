@@ -1,18 +1,5 @@
 # Open Interview Coder - Improved Version
 
-
-
-## Features
-
-- 🎯 Invisibility: Undetectable window that bypasses most screen capture methods
-- 📸 Screenshot Capture: Capture screenshots of coding problems
-- 🤖 AI-Powered Analysis: Automatically analyzes coding problems
-- 💡 Solution Generation: Get detailed explanations and solutions
-- 🔧 Real-time Debugging: Debug your code with AI assistance
-- 🎨 Window Management: Freely move and position the window anywhere on screen
-
-# Open Interview Coder - User Guide
-
 ## Table of Contents
 1. [Introduction](#introduction)
 2. [Installation](#installation)
@@ -75,6 +62,15 @@ The application works by creating an invisible window that can be toggled on and
 4. You can now use the application to take screenshots, analyze coding problems, and get solutions.
 
 ## Features
+
+## Features
+
+- 🎯 Invisibility: Undetectable window that bypasses most screen capture methods
+- 📸 Screenshot Capture: Capture screenshots of coding problems
+- 🤖 AI-Powered Analysis: Automatically analyzes coding problems
+- 💡 Solution Generation: Get detailed explanations and solutions
+- 🔧 Real-time Debugging: Debug your code with AI assistance
+- 🎨 Window Management: Freely move and position the window anywhere on screen
 
 ### Invisibility
 The application window is invisible to most screen sharing and recording software, including:
