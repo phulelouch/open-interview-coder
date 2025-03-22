@@ -1,5 +1,11 @@
 # Open Interview Coder - Improved Version
 
+
+
+https://github.com/user-attachments/assets/23365245-2f4b-4f9a-af44-5358402b0546
+
+
+
 ## Table of Contents
 1. [Introduction](#introduction)
 2. [Installation](#installation)
@@ -39,20 +45,16 @@ The application works by creating an invisible window that can be toggled on and
    npm install
    ```
 
-3. Create a `.env` file in the root directory with your OpenAI API key:
-   ```
-   OPENAI_API_KEY=your_api_key_here
-   ```
-
-4. Build the application:
+3. Build the application:
    ```bash
    npm run build
    ```
 
-5. Start the application:
+4. Start the application:
    ```bash
    npm start
    ```
+5. Apply your OpenAI API key in settings
 
 ## Getting Started
 
@@ -141,7 +143,6 @@ To show the window after it's been hidden:
 ### Application Not Starting
 - Ensure Node.js is installed and is version 18.19.0 
 - Check that all dependencies are installed with `npm install`
-- Verify that the `.env` file exists with a valid OpenAI API key
 
 ### Screenshots Not Working
 - Ensure the application has screen recording permissions
@@ -150,7 +151,6 @@ To show the window after it's been hidden:
 - On Linux: May require `xhost` access depending on your distribution
 
 ### OpenAI API Errors
-- Verify your API key is correct in the `.env` file
 - Check your internet connection
 - Ensure your OpenAI account has available credits
 
