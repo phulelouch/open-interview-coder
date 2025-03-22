@@ -22,7 +22,7 @@ The application works by creating an invisible window that can be toggled on and
 ## Installation
 
 ### Prerequisites
-- Node.js (v20.19.0 or higher)
+- Node.js (v18.19.0 or higher)
 - OpenAI API Key
 
 ### Installation Steps
