@@ -66,50 +66,12 @@ The application works by creating an invisible window that can be toggled on and
 ## Features
 
 - 🎯 Invisibility: Undetectable window that bypasses most screen capture methods
-- 📸 Screenshot Capture: Capture screenshots of coding problems
+- 📸 Screenshot Capture: Capture screenshots of coding problems with a simple keyboard shortcut.
 - 🤖 AI-Powered Analysis: Automatically analyzes coding problems
 - 💡 Solution Generation: Get detailed explanations and solutions
-- 🔧 Real-time Debugging: Debug your code with AI assistance
+- 🔧 Real-time Debugging: Debug your code with AI assistance (GPT for now)
 - 🎨 Window Management: Freely move and position the window anywhere on screen
 
-### Invisibility
-The application window is invisible to most screen sharing and recording software, including:
-- Google Meet
-- Discord
-- Most browser-based screen recording tools
-- Screenshot tools
-
-### Screenshot Capture
-Capture screenshots of coding problems directly from your screen with a simple keyboard shortcut.
-
-### AI-Powered Analysis
-Get AI-powered analysis of coding problems, including:
-- Problem understanding
-- Solution strategies
-- Code examples
-- Debugging assistance
-
-### Window Management
-Easily move and position the window anywhere on your screen using keyboard shortcuts.
-
-## User Interface
-
-The application has a tabbed interface with three main sections:
-
-### Prompt Tab
-- Text input field for entering custom prompts
-- Send button to submit prompts to the AI
-- Response area displaying AI-generated solutions and explanations
-
-### Screenshots Tab
-- Button to take screenshots
-- Button to process screenshots
-- List of captured screenshots
-- Option to remove screenshots
-
-### Shortcuts Tab
-- List of all available keyboard shortcuts
-- Descriptions of what each shortcut does
 
 ## Keyboard Shortcuts
 
