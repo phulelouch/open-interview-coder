@@ -1,18 +1,66 @@
 {
-    "name": "my-electron-chatgpt",
-    "version": "1.0.0",
-    "main": "dist/main.js",
-    "scripts": {
-        "start": "electron dist/main.js",
-        "build": "tsc"
+  "name": "open-interview-coder",
+  "version": "1.0.0",
+  "description": "An invisible desktop application to help you pass your technical interviews.",
+  "main": "dist/main.js",
+  "scripts": {
+    "start": "electron dist/main.js",
+    "dev": "tsc && electron dist/main.js",
+    "build": "tsc && electron-builder",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "electron-log": "^5.2.4",
+    "electron-store": "^8.1.0",
+    "node-fetch": "^2.6.11",
+    "screenshot-desktop": "^1.15.0",
+    "tailwindcss": "^3.4.15"
+  },
+  "devDependencies": {
+    "@types/node-fetch": "^2.6.2",
+    "@types/screenshot-desktop": "^1.12.3",
+    "autoprefixer": "^10.4.20",
+    "electron": "^29.0.0",
+    "electron-builder": "^24.13.3",
+    "postcss": "^8.4.49",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.0.4"
+  },
+  "build": {
+    "appId": "com.openinterviewcoder.app",
+    "productName": "Open Interview Coder",
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "release"
     },
-    "dependencies": {
-        "dotenv": "^16.4.7",
-        "electron": "^29.0.0",
-        "node-fetch": "^2.6.11"
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "assets/icons/mac/icon.icns"
     },
-    "devDependencies": {
-        "@types/node-fetch": "^2.6.2",
-        "typescript": "^5.0.4"
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "assets/icons/win/icon.ico"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "icon": "assets/icons/png/icon-256x256.png"
     }
+  }
 }

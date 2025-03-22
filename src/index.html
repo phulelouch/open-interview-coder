@@ -2,26 +2,419 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>ChatGPT Frontend</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Open Interview Coder</title>
+    <style>
+      :root {
+        --primary: #3b82f6;
+        --primary-hover: #2563eb;
+        --background: rgba(15, 23, 42, 0.8);
+        --text: #f8fafc;
+        --border: #334155;
+        --success: #10b981;
+        --error: #ef4444;
+      }
+      
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        background: var(--background);
+        color: var(--text);
+        height: 100vh;
+        overflow: hidden;
+        user-select: none;
+        -webkit-app-region: drag;
+      }
+      
+      .app-container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        padding: 1rem;
+      }
+      
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 1rem;
+      }
+      
+      .header h1 {
+        font-size: 1.25rem;
+        font-weight: 600;
+      }
+      
+      .header-controls {
+        display: flex;
+        gap: 0.5rem;
+      }
+      
+      .btn {
+        background: transparent;
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 0.25rem;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        -webkit-app-region: no-drag;
+      }
+      
+      .btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+      
+      .btn-primary {
+        background: var(--primary);
+        border-color: var(--primary);
+      }
+      
+      .btn-primary:hover {
+        background: var(--primary-hover);
+      }
+      
+      .btn-danger {
+        background: var(--error);
+        border-color: var(--error);
+      }
+      
+      .btn-danger:hover {
+        background: #dc2626;
+      }
+      
+      .tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+      }
+      
+      .tab {
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        -webkit-app-region: no-drag;
+      }
+      
+      .tab.active {
+        border-bottom: 2px solid var(--primary);
+        font-weight: 500;
+      }
+      
+      .content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      
+      .tab-content {
+        display: none;
+        flex: 1;
+        overflow: auto;
+      }
+      
+      .tab-content.active {
+        display: flex;
+        flex-direction: column;
+      }
+      
+      .prompt-container {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      
+      .prompt-input {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--border);
+        border-radius: 0.25rem;
+        padding: 0.5rem;
+        color: var(--text);
+        font-size: 0.875rem;
+        -webkit-app-region: no-drag;
+      }
+      
+      .prompt-input:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+      
+      .response-container {
+        flex: 1;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--border);
+        border-radius: 0.25rem;
+        padding: 1rem;
+        overflow: auto;
+        white-space: pre-wrap;
+        font-size: 0.875rem;
+        line-height: 1.5;
+      }
+      
+      .screenshots-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .screenshot-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      
+      .screenshot-item {
+        width: 150px;
+        height: 100px;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--border);
+        border-radius: 0.25rem;
+        overflow: hidden;
+        position: relative;
+        cursor: pointer;
+        -webkit-app-region: no-drag;
+      }
+      
+      .screenshot-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      
+      .screenshot-item .remove {
+        position: absolute;
+        top: 0.25rem;
+        right: 0.25rem;
+        width: 1rem;
+        height: 1rem;
+        background: var(--error);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+      
+      .screenshot-item:hover .remove {
+        opacity: 1;
+      }
+      
+      .shortcuts-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      
+      .shortcut-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem;
+        border-bottom: 1px solid var(--border);
+      }
+      
+      .shortcut-key {
+        display: inline-flex;
+        gap: 0.25rem;
+      }
+      
+      .key {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--border);
+        border-radius: 0.25rem;
+        padding: 0.125rem 0.25rem;
+        font-size: 0.75rem;
+        font-family: monospace;
+      }
+      
+      .footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 0.5rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.5);
+      }
+      
+      .status {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      
+      .status-indicator {
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 50%;
+        background: var(--success);
+      }
+      
+      .toast {
+        position: fixed;
+        bottom: 1rem;
+        right: 1rem;
+        background: rgba(0, 0, 0, 0.8);
+        border: 1px solid var(--border);
+        border-radius: 0.25rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        transform: translateY(100%);
+        opacity: 0;
+        transition: all 0.3s;
+      }
+      
+      .toast.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    </style>
   </head>
-  <body style="margin: 40px; font-family: sans-serif; background: rgba(0,0,0,0.3); color: #fff;">
-    <h1>Electron + ChatGPT Demo</h1>
-    <div>
-      <label for="userInput">Prompt:</label>
-      <input type="text" id="userInput" style="width: 300px;" />
-      <button id="sendBtn">Send</button>
+  <body>
+    <div class="app-container">
+      <div class="header">
+        <h1>Open Interview Coder</h1>
+        <div class="header-controls">
+          <button id="minimizeBtn" class="btn">_</button>
+          <button id="closeBtn" class="btn">×</button>
+        </div>
+      </div>
+      
+      <div class="tabs">
+        <div class="tab active" data-tab="prompt">Prompt</div>
+        <div class="tab" data-tab="screenshots">Screenshots</div>
+        <div class="tab" data-tab="shortcuts">Shortcuts</div>
+      </div>
+      
+      <div class="content">
+        <div class="tab-content active" data-tab-content="prompt">
+          <div class="prompt-container">
+            <input type="text" id="userInput" class="prompt-input" placeholder="Enter your prompt here..." />
+            <button id="sendBtn" class="btn btn-primary">Send</button>
+          </div>
+          <div id="responseContainer" class="response-container"></div>
+        </div>
+        
+        <div class="tab-content" data-tab-content="screenshots">
+          <div class="screenshots-container">
+            <div class="screenshot-controls">
+              <button id="takeScreenshotBtn" class="btn btn-primary">Take Screenshot</button>
+              <button id="processScreenshotsBtn" class="btn">Process Screenshots</button>
+            </div>
+            <div id="screenshotList" class="screenshot-list">
+              <div class="screenshot-item empty">
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: rgba(255,255,255,0.5);">
+                  No screenshots
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tab-content" data-tab-content="shortcuts">
+          <div class="shortcuts-container">
+            <div class="shortcut-item">
+              <span>Toggle Window Visibility</span>
+              <div class="shortcut-key">
+                <span class="key">Ctrl/Cmd</span>+<span class="key">Shift</span>+<span class="key">A</span>
+              </div>
+            </div>
+            <div class="shortcut-item">
+              <span>Take Screenshot</span>
+              <div class="shortcut-key">
+                <span class="key">Ctrl/Cmd</span>+<span class="key">Shift</span>+<span class="key">S</span>
+              </div>
+            </div>
+            <div class="shortcut-item">
+              <span>Process Screenshots</span>
+              <div class="shortcut-key">
+                <span class="key">Ctrl/Cmd</span>+<span class="key">Shift</span>+<span class="key">P</span>
+              </div>
+            </div>
+            <div class="shortcut-item">
+              <span>Move Window Up</span>
+              <div class="shortcut-key">
+                <span class="key">Ctrl/Cmd</span>+<span class="key">Shift</span>+<span class="key">↑</span>
+              </div>
+            </div>
+            <div class="shortcut-item">
+              <span>Move Window Down</span>
+              <div class="shortcut-key">
+                <span class="key">Ctrl/Cmd</span>+<span class="key">Shift</span>+<span class="key">↓</span>
+              </div>
+            </div>
+            <div class="shortcut-item">
+              <span>Move Window Left</span>
+              <div class="shortcut-key">
+                <span class="key">Ctrl/Cmd</span>+<span class="key">Shift</span>+<span class="key">←</span>
+              </div>
+            </div>
+            <div class="shortcut-item">
+              <span>Move Window Right</span>
+              <div class="shortcut-key">
+                <span class="key">Ctrl/Cmd</span>+<span class="key">Shift</span>+<span class="key">→</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer">
+        <div class="status">
+          <div class="status-indicator"></div>
+          <span>Ready</span>
+        </div>
+        <div>Open Interview Coder v1.0.0</div>
+      </div>
     </div>
-    <div id="responseContainer" style="margin-top: 20px; white-space: pre-wrap;"></div>
-
+    
+    <div id="toast" class="toast"></div>
+    
     <script>
+      // DOM Elements
       const userInput = document.getElementById('userInput');
       const sendBtn = document.getElementById('sendBtn');
       const responseContainer = document.getElementById('responseContainer');
-
+      const minimizeBtn = document.getElementById('minimizeBtn');
+      const closeBtn = document.getElementById('closeBtn');
+      const tabs = document.querySelectorAll('.tab');
+      const tabContents = document.querySelectorAll('.tab-content');
+      const takeScreenshotBtn = document.getElementById('takeScreenshotBtn');
+      const processScreenshotsBtn = document.getElementById('processScreenshotsBtn');
+      const screenshotList = document.getElementById('screenshotList');
+      const toast = document.getElementById('toast');
+      
+      // Tab switching
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          // Remove active class from all tabs and contents
+          tabs.forEach(t => t.classList.remove('active'));
+          tabContents.forEach(c => c.classList.remove('active'));
+          
+          // Add active class to clicked tab and corresponding content
+          tab.classList.add('active');
+          const tabName = tab.getAttribute('data-tab');
+          document.querySelector(`[data-tab-content="${tabName}"]`).classList.add('active');
+        });
+      });
+      
+      // Send prompt to ChatGPT
       sendBtn.addEventListener('click', async () => {
         const prompt = userInput.value.trim();
         if (!prompt) return;
-
+        
         responseContainer.textContent = 'Loading...';
         try {
           const reply = await window.electronAPI.sendPrompt(prompt);
@@ -29,6 +422,100 @@
         } catch (error) {
           responseContainer.textContent = `Error: ${error.message}`;
         }
+      });
+      
+      // Allow Enter key to send prompt
+      userInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          sendBtn.click();
+        }
+      });
+      
+      // Window controls
+      minimizeBtn.addEventListener('click', () => {
+        window.electronAPI.hideWindow();
+      });
+      
+      closeBtn.addEventListener('click', () => {
+        window.electronAPI.closeWindow();
+      });
+      
+      // Screenshot functionality
+      takeScreenshotBtn.addEventListener('click', async () => {
+        try {
+          const result = await window.electronAPI.takeScreenshot();
+          if (result.success) {
+            updateScreenshotList();
+            showToast('Screenshot taken');
+          } else {
+            showToast(`Error: ${result.error}`, 'error');
+          }
+        } catch (error) {
+          showToast(`Error: ${error.message}`, 'error');
+        }
+      });
+      
+      // Process screenshots
+      processScreenshotsBtn.addEventListener('click', async () => {
+        try {
+          // Switch to prompt tab
+          tabs[0].click();
+          
+          responseContainer.textContent = 'Analyzing screenshots...';
+          const result = await window.electronAPI.analyzeScreenshots({ language: 'python' });
+          
+          if (result.success) {
+            responseContainer.textContent = result.analysis;
+          } else {
+            responseContainer.textContent = `Error: ${result.error}`;
+          }
+        } catch (error) {
+          responseContainer.textContent = `Error: ${error.message}`;
+        }
+      });
+      
+      // Update screenshot list
+      async function updateScreenshotList() {
+        // This would normally fetch the list of screenshots from the main process
+        // For now, we'll just show a placeholder
+        screenshotList.innerHTML = '';
+        
+        // Add a placeholder screenshot
+        const item = document.createElement('div');
+        item.className = 'screenshot-item';
+        item.innerHTML = `
+          <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: rgba(255,255,255,0.8);">
+            Screenshot
+          </div>
+          <div class="remove">×</div>
+        `;
+        screenshotList.appendChild(item);
+      }
+      
+      // Show toast message
+      function showToast(message, type = 'info') {
+        toast.textContent = message;
+        toast.className = 'toast show';
+        
+        if (type === 'error') {
+          toast.style.borderColor = 'var(--error)';
+        } else {
+          toast.style.borderColor = 'var(--primary)';
+        }
+        
+        setTimeout(() => {
+          toast.className = 'toast';
+        }, 3000);
+      }
+      
+      // Listen for IPC events from main process
+      window.electronAPI.onScreenshotTaken((data) => {
+        updateScreenshotList();
+        showToast('Screenshot taken');
+      });
+      
+      window.electronAPI.onProcessScreenshots(() => {
+        processScreenshotsBtn.click();
       });
     </script>
   </body>
