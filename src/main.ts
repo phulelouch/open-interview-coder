@@ -9,6 +9,8 @@ import * as os from 'os';
 import * as electronLog from 'electron-log';
 // Use CommonJS require for electron-store with Node 18
 const Store = require('electron-store');
+// Use CommonJS require for OpenAI with Node 18
+const { OpenAI } = require('openai');
 
 // Configure logging
 electronLog.initialize();
@@ -24,6 +26,7 @@ interface StoreSchema {
   windowPosition: { x: number, y: number };
   windowSize: { width: number, height: number };
   preferredLanguage: string;
+  apiKey?: string;
 }
 
 // Create store with schema
@@ -139,43 +142,56 @@ async function takeScreenshot(): Promise<string> {
     return screenshotPath;
   } catch (error) {
     log.error('Failed to take screenshot:', error);
+    console.error('Failed to take screenshot:', error);
     throw new Error(`Failed to take screenshot: ${(error as Error).message}`);
+  }
+}
+
+// Convert image to base64
+function imageToBase64(imagePath: string): string {
+  try {
+    const imageBuffer = fs.readFileSync(imagePath);
+    return imageBuffer.toString('base64');
+  } catch (error) {
+    log.error('Failed to convert image to base64:', error);
+    console.error('Failed to convert image to base64:', error);
+    throw new Error(`Failed to convert image to base64: ${(error as Error).message}`);
   }
 }
 
 // Handle calls from the renderer to ChatGPT
 ipcMain.handle('chatgpt-request', async (_event: IpcMainInvokeEvent, prompt: string) => {
-  // Ensure API key is loaded
-  if (!process.env.OPENAI_API_KEY) {
-    throw new Error('Missing OPENAI_API_KEY in .env');
+  // Get API key from store
+  const apiKey = store.get('apiKey');
+  
+  if (!apiKey) {
+    const errorMsg = 'Missing OpenAI API Key. Please add your API key in the Settings tab.';
+    log.error(errorMsg);
+    console.error(errorMsg);
+    throw new Error(errorMsg);
   }
 
   try {
     log.info('Sending request to OpenAI API');
+    
+    // Initialize OpenAI client
+    const openai = new OpenAI({
+      apiKey: apiKey
+    });
+    
     // Make a request to OpenAI
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
-        messages: [{ role: 'user', content: prompt }]
-      })
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [{ role: 'user', content: prompt }]
     });
 
-    if (!response.ok) {
-      throw new Error(`OpenAI API returned error: ${response.statusText}`);
-    }
-
     // Extract the response
-    const data: any = await response.json();
-    const assistantReply = data?.choices?.[0]?.message?.content || '';
+    const assistantReply = completion.choices[0].message.content || '';
     log.info('Received response from OpenAI API');
     return assistantReply;
   } catch (error) {
     log.error('Failed to fetch from OpenAI:', error);
+    console.error('Failed to fetch from OpenAI:', error);
     throw new Error(`Failed to fetch from OpenAI: ${(error as Error).message}`);
   }
 });
@@ -197,39 +213,160 @@ ipcMain.handle('take-screenshot', async () => {
     return { success: true, path: screenshotPath };
   } catch (error) {
     log.error('Error taking screenshot:', error);
+    console.error('Error taking screenshot:', error);
     return { success: false, error: (error as Error).message };
   }
 });
 
-// Handle screenshot analysis request
+// Define the type for message content
+type MessageContent = string | Array<{
+  type: string;
+  text?: string;
+  image_url?: { url: string };
+}>;
+
+// Handle screenshot analysis request with image upload using modern OpenAI SDK
 ipcMain.handle('analyze-screenshots', async (_event: IpcMainInvokeEvent, options: { language?: string }) => {
   if (screenshotQueue.length === 0) {
-    return { success: false, error: 'No screenshots available to analyze' };
+    const errorMsg = 'No screenshots available to analyze';
+    log.error(errorMsg);
+    console.error(errorMsg);
+    return { success: false, error: errorMsg };
   }
 
   try {
+    // Get API key from store
+    const apiKey = store.get('apiKey');
+    
+    if (!apiKey) {
+      const errorMsg = 'Missing OpenAI API Key. Please add your API key in the Settings tab.';
+      log.error(errorMsg);
+      console.error(errorMsg);
+      return { success: false, error: errorMsg };
+    }
+    
+    // Initialize OpenAI client
+    const openai = new OpenAI({
+      apiKey: apiKey
+    });
+    
     // Prepare screenshots for analysis
     const screenshots = [...screenshotQueue];
     const language = options.language || store.get('preferredLanguage') || 'python';
     
     // Build prompt for OpenAI
-    let prompt = `I'm taking a coding interview and need help with the following problem. `;
-    prompt += `Please analyze these screenshots and provide a solution in ${language}. `;
-    prompt += `First explain the problem, then provide a step-by-step solution with code examples.`;
+    const promptText = `I'm taking a coding interview and need help with the following problem. Please analyze these screenshots and provide a solution in ${language}. First explain the problem, then provide a step-by-step solution with code examples.`;
     
-    // We would normally encode the images here, but for simplicity we'll just mention them
-    prompt += `\n\nI've taken ${screenshots.length} screenshots of the problem.`;
+    // Prepare message content array
+    const messageContent: MessageContent = [
+      { type: 'text', text: promptText }
+    ];
     
-    // Send to OpenAI
-    const analysis = await ipcMain.emit('chatgpt-request', _event, prompt);
+    // Add images to the message content
+    for (const screenshotPath of screenshots) {
+      try {
+        // Convert image to base64
+        const base64Image = imageToBase64(screenshotPath);
+        
+        // Add image content
+        (messageContent as Array<any>).push({
+          type: 'image_url',
+          image_url: {
+            url: `data:image/png;base64,${base64Image}`
+          }
+        });
+      } catch (error) {
+        log.error(`Error processing image ${screenshotPath}:`, error);
+        console.error(`Error processing image ${screenshotPath}:`, error);
+      }
+    }
+    
+    log.info('Sending request to OpenAI API with images');
+    console.log('Sending request to OpenAI API with images');
+    
+    // Make a request to OpenAI with images using the SDK
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [{
+        role: "user",
+        content: messageContent as any
+      }],
+      max_tokens: 2000
+    });
+
+    // Extract the response
+    const analysis = completion.choices[0].message.content || 'Analysis completed, but no specific solution was generated.';
+    
+    log.info('Received analysis from OpenAI API');
+    console.log('Received analysis from OpenAI API');
     
     return { 
       success: true, 
-      analysis: analysis || 'Analysis completed, but no specific solution was generated.',
+      analysis: analysis,
       screenshots: screenshots
     };
   } catch (error) {
     log.error('Error analyzing screenshots:', error);
+    console.error('Error analyzing screenshots:', error);
+    return { success: false, error: (error as Error).message };
+  }
+});
+
+// API Key and Preferences handlers
+ipcMain.handle('save-api-key', (_event: IpcMainInvokeEvent, apiKey: string) => {
+  try {
+    store.set('apiKey', apiKey);
+    return { success: true };
+  } catch (error) {
+    log.error('Error saving API key:', error);
+    console.error('Error saving API key:', error);
+    return { success: false, error: (error as Error).message };
+  }
+});
+
+ipcMain.handle('get-api-key', () => {
+  return store.get('apiKey') || '';
+});
+
+ipcMain.handle('save-preferences', (_event: IpcMainInvokeEvent, preferences: { preferredLanguage: string }) => {
+  try {
+    if (preferences.preferredLanguage) {
+      store.set('preferredLanguage', preferences.preferredLanguage);
+    }
+    return { success: true };
+  } catch (error) {
+    log.error('Error saving preferences:', error);
+    console.error('Error saving preferences:', error);
+    return { success: false, error: (error as Error).message };
+  }
+});
+
+ipcMain.handle('get-preferences', () => {
+  return {
+    preferredLanguage: store.get('preferredLanguage') || 'python'
+  };
+});
+
+ipcMain.handle('get-screenshots', () => {
+  return screenshotQueue;
+});
+
+ipcMain.handle('remove-screenshot', (_event: IpcMainInvokeEvent, index: number) => {
+  try {
+    if (index >= 0 && index < screenshotQueue.length) {
+      const screenshotPath = screenshotQueue[index];
+      screenshotQueue.splice(index, 1);
+      
+      if (fs.existsSync(screenshotPath)) {
+        fs.unlinkSync(screenshotPath);
+      }
+      
+      return { success: true };
+    }
+    return { success: false, error: 'Invalid screenshot index' };
+  } catch (error) {
+    log.error('Error removing screenshot:', error);
+    console.error('Error removing screenshot:', error);
     return { success: false, error: (error as Error).message };
   }
 });
@@ -278,6 +415,7 @@ ipcMain.on('move-window', (_event, direction) => {
 app.whenReady().then(() => {
   createWindow();
   log.info('Application started');
+  console.log('Application started');
 
   // Register global shortcuts
   
@@ -312,6 +450,7 @@ app.whenReady().then(() => {
       }
     } catch (error) {
       log.error('Error taking screenshot via shortcut:', error);
+      console.error('Error taking screenshot via shortcut:', error);
     }
   });
   
@@ -363,5 +502,6 @@ app.on('will-quit', () => {
     }
   } catch (error) {
     log.error('Error cleaning up screenshots:', error);
+    console.error('Error cleaning up screenshots:', error);
   }
 });

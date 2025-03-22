@@ -18,6 +18,17 @@ contextBridge.exposeInMainWorld('electronAPI', {
   analyzeScreenshots: (options: { language?: string }) => 
     ipcRenderer.invoke('analyze-screenshots', options),
   
+  // API Key and Preferences management
+  saveApiKey: (apiKey: string) => ipcRenderer.invoke('save-api-key', apiKey),
+  getApiKey: () => ipcRenderer.invoke('get-api-key'),
+  savePreferences: (preferences: { preferredLanguage: string }) => 
+    ipcRenderer.invoke('save-preferences', preferences),
+  getPreferences: () => ipcRenderer.invoke('get-preferences'),
+  
+  // Screenshot management
+  getScreenshots: () => ipcRenderer.invoke('get-screenshots'),
+  removeScreenshot: (index: number) => ipcRenderer.invoke('remove-screenshot', index),
+  
   // Event listeners
   onScreenshotTaken: (callback: (data: any) => void) => {
     ipcRenderer.on('screenshot-taken', (_event, data) => callback(data));

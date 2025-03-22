@@ -239,6 +239,38 @@
         font-family: monospace;
       }
       
+      .settings-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .settings-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 1rem;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--border);
+        border-radius: 0.25rem;
+      }
+      
+      .settings-group h3 {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+      }
+      
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+      
+      .form-group label {
+        font-size: 0.875rem;
+        color: rgba(255, 255, 255, 0.7);
+      }
+      
       .footer {
         display: flex;
         justify-content: space-between;
@@ -295,6 +327,7 @@
       <div class="tabs">
         <div class="tab active" data-tab="prompt">Prompt</div>
         <div class="tab" data-tab="screenshots">Screenshots</div>
+        <div class="tab" data-tab="settings">Settings</div>
         <div class="tab" data-tab="shortcuts">Shortcuts</div>
       </div>
       
@@ -318,6 +351,39 @@
                 <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: rgba(255,255,255,0.5);">
                   No screenshots
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tab-content" data-tab-content="settings">
+          <div class="settings-container">
+            <div class="settings-group">
+              <h3>API Settings</h3>
+              <div class="form-group">
+                <label for="apiKey">OpenAI API Key</label>
+                <input type="password" id="apiKey" class="prompt-input" placeholder="sk-..." />
+                <small style="font-size: 0.75rem; color: rgba(255,255,255,0.5);">Your API key is stored locally and never sent to our servers.</small>
+              </div>
+              <div style="display: flex; justify-content: flex-end; margin-top: 0.5rem;">
+                <button id="saveApiKeyBtn" class="btn btn-primary">Save API Key</button>
+              </div>
+            </div>
+            
+            <div class="settings-group">
+              <h3>Preferences</h3>
+              <div class="form-group">
+                <label for="preferredLanguage">Preferred Programming Language</label>
+                <select id="preferredLanguage" class="prompt-input">
+                  <option value="python">Python</option>
+                  <option value="javascript">JavaScript</option>
+                  <option value="java">Java</option>
+                  <option value="csharp">C#</option>
+                  <option value="cpp">C++</option>
+                </select>
+              </div>
+              <div style="display: flex; justify-content: flex-end; margin-top: 0.5rem;">
+                <button id="savePreferencesBtn" class="btn btn-primary">Save Preferences</button>
               </div>
             </div>
           </div>
@@ -384,138 +450,187 @@
     
     <script>
       // DOM Elements
+      const tabs = document.querySelectorAll('.tab');
+      const tabContents = document.querySelectorAll('.tab-content');
+      const minimizeBtn = document.getElementById('minimizeBtn');
+      const closeBtn = document.getElementById('closeBtn');
       const userInput = document.getElementById('userInput');
       const sendBtn = document.getElementById('sendBtn');
       const responseContainer = document.getElementById('responseContainer');
-      const minimizeBtn = document.getElementById('minimizeBtn');
-      const closeBtn = document.getElementById('closeBtn');
-      const tabs = document.querySelectorAll('.tab');
-      const tabContents = document.querySelectorAll('.tab-content');
       const takeScreenshotBtn = document.getElementById('takeScreenshotBtn');
       const processScreenshotsBtn = document.getElementById('processScreenshotsBtn');
       const screenshotList = document.getElementById('screenshotList');
       const toast = document.getElementById('toast');
+      const apiKeyInput = document.getElementById('apiKey');
+      const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
+      const preferredLanguageSelect = document.getElementById('preferredLanguage');
+      const savePreferencesBtn = document.getElementById('savePreferencesBtn');
       
       // Tab switching
-      tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
+      function switchTab(tabName) {
           // Remove active class from all tabs and contents
           tabs.forEach(t => t.classList.remove('active'));
           tabContents.forEach(c => c.classList.remove('active'));
           
-          // Add active class to clicked tab and corresponding content
-          tab.classList.add('active');
-          const tabName = tab.getAttribute('data-tab');
+          // Add active class to selected tab and content
+          document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
           document.querySelector(`[data-tab-content="${tabName}"]`).classList.add('active');
-        });
-      });
+      }
       
-      // Send prompt to ChatGPT
-      sendBtn.addEventListener('click', async () => {
-        const prompt = userInput.value.trim();
-        if (!prompt) return;
-        
-        responseContainer.textContent = 'Loading...';
-        try {
-          const reply = await window.electronAPI.sendPrompt(prompt);
-          responseContainer.textContent = reply;
-        } catch (error) {
-          responseContainer.textContent = `Error: ${error.message}`;
-        }
-      });
-      
-      // Allow Enter key to send prompt
-      userInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          sendBtn.click();
-        }
+      tabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+              const tabName = tab.getAttribute('data-tab');
+              switchTab(tabName);
+          });
       });
       
       // Window controls
       minimizeBtn.addEventListener('click', () => {
-        window.electronAPI.hideWindow();
+          window.electronAPI.hideWindow();
       });
       
       closeBtn.addEventListener('click', () => {
-        window.electronAPI.closeWindow();
+          window.electronAPI.closeWindow();
+      });
+      
+      // Send prompt to ChatGPT
+      sendBtn.addEventListener('click', async () => {
+          const prompt = userInput.value.trim();
+          if (!prompt) return;
+          
+          responseContainer.textContent = 'Loading...';
+          try {
+              const reply = await window.electronAPI.sendPrompt(prompt);
+              responseContainer.textContent = reply;
+          } catch (error) {
+              responseContainer.textContent = `Error: ${error.message}`;
+          }
+      });
+      
+      userInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+              sendBtn.click();
+          }
       });
       
       // Screenshot functionality
       takeScreenshotBtn.addEventListener('click', async () => {
-        try {
-          const result = await window.electronAPI.takeScreenshot();
-          if (result.success) {
-            updateScreenshotList();
-            showToast('Screenshot taken');
-          } else {
-            showToast(`Error: ${result.error}`, 'error');
+          try {
+              const result = await window.electronAPI.takeScreenshot();
+              if (result.success) {
+                  showToast('Screenshot taken');
+                  updateScreenshotList();
+              } else {
+                  showToast(`Error: ${result.error}`);
+              }
+          } catch (error) {
+              showToast(`Error: ${error.message}`);
           }
-        } catch (error) {
-          showToast(`Error: ${error.message}`, 'error');
-        }
       });
       
-      // Process screenshots
       processScreenshotsBtn.addEventListener('click', async () => {
-        try {
-          // Switch to prompt tab
-          tabs[0].click();
-          
-          responseContainer.textContent = 'Analyzing screenshots...';
-          const result = await window.electronAPI.analyzeScreenshots({ language: 'python' });
-          
-          if (result.success) {
-            responseContainer.textContent = result.analysis;
-          } else {
-            responseContainer.textContent = `Error: ${result.error}`;
+          try {
+              const language = preferredLanguageSelect.value;
+              const result = await window.electronAPI.analyzeScreenshots({ language });
+              if (result.success) {
+                  switchTab('prompt');
+                  responseContainer.textContent = result.analysis || 'Analysis completed, but no specific solution was generated.';
+              } else {
+                  showToast(`Error: ${result.error}`);
+              }
+          } catch (error) {
+              showToast(`Error: ${error.message}`);
           }
-        } catch (error) {
-          responseContainer.textContent = `Error: ${error.message}`;
-        }
       });
+      
+      // API Key and Preferences
+      saveApiKeyBtn.addEventListener('click', () => {
+          const apiKey = apiKeyInput.value.trim();
+          if (!apiKey) {
+              showToast('Please enter an API key');
+              return;
+          }
+          
+          window.electronAPI.saveApiKey(apiKey);
+          showToast('API key saved');
+      });
+      
+      savePreferencesBtn.addEventListener('click', () => {
+          const language = preferredLanguageSelect.value;
+          window.electronAPI.savePreferences({ preferredLanguage: language });
+          showToast('Preferences saved');
+      });
+      
+      // Load saved settings
+      function loadSettings() {
+          const apiKey = window.electronAPI.getApiKey();
+          if (apiKey) {
+              apiKeyInput.value = apiKey;
+          }
+          
+          const preferences = window.electronAPI.getPreferences();
+          if (preferences && preferences.preferredLanguage) {
+              preferredLanguageSelect.value = preferences.preferredLanguage;
+          }
+      }
       
       // Update screenshot list
-      async function updateScreenshotList() {
-        // This would normally fetch the list of screenshots from the main process
-        // For now, we'll just show a placeholder
-        screenshotList.innerHTML = '';
-        
-        // Add a placeholder screenshot
-        const item = document.createElement('div');
-        item.className = 'screenshot-item';
-        item.innerHTML = `
-          <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: rgba(255,255,255,0.8);">
-            Screenshot
-          </div>
-          <div class="remove">×</div>
-        `;
-        screenshotList.appendChild(item);
+      function updateScreenshotList() {
+          const screenshots = window.electronAPI.getScreenshots();
+          
+          if (screenshots.length === 0) {
+              screenshotList.innerHTML = `
+                  <div class="screenshot-item empty">
+                      <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: rgba(255,255,255,0.5);">
+                          No screenshots
+                      </div>
+                  </div>
+              `;
+              return;
+          }
+          
+          screenshotList.innerHTML = screenshots.map((path, index) => `
+              <div class="screenshot-item" data-path="${path}">
+                  <img src="${path}" alt="Screenshot ${index + 1}" />
+                  <div class="remove" data-index="${index}">×</div>
+              </div>
+          `).join('');
+          
+          // Add event listeners to remove buttons
+          document.querySelectorAll('.screenshot-item .remove').forEach(btn => {
+              btn.addEventListener('click', (e) => {
+                  e.stopPropagation();
+                  const index = parseInt(btn.getAttribute('data-index'));
+                  window.electronAPI.removeScreenshot(index);
+                  updateScreenshotList();
+              });
+          });
       }
       
-      // Show toast message
-      function showToast(message, type = 'info') {
-        toast.textContent = message;
-        toast.className = 'toast show';
-        
-        if (type === 'error') {
-          toast.style.borderColor = 'var(--error)';
-        } else {
-          toast.style.borderColor = 'var(--primary)';
-        }
-        
-        setTimeout(() => {
-          toast.className = 'toast';
-        }, 3000);
+      // Toast notification
+      function showToast(message, duration = 3000) {
+          toast.textContent = message;
+          toast.classList.add('show');
+          
+          setTimeout(() => {
+              toast.classList.remove('show');
+          }, duration);
       }
       
-      // Listen for IPC events from main process
-      window.electronAPI.onScreenshotTaken((data) => {
-        updateScreenshotList();
-        showToast('Screenshot taken');
+      // Event listeners from main process
+      window.electronAPI.onScreenshotTaken(() => {
+          updateScreenshotList();
       });
       
       window.electronAPI.onProcessScreenshots(() => {
-        processScreenshotsBtn.click();
+          processScreenshotsBtn.click();
+      });
+      
+      // Initialize
+      document.addEventListener('DOMContentLoaded', () => {
+          loadSettings();
+          updateScreenshotList();
+          tabs[0].click();
       });
     </script>
   </body>
