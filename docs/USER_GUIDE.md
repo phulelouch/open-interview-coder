@@ -11,7 +11,6 @@
 8. [Analyzing Code Problems](#analyzing-code-problems)
 9. [Window Management](#window-management)
 10. [Troubleshooting](#troubleshooting)
-11. [FAQ](#faq)
 
 ## Introduction
 
