@@ -167,7 +167,7 @@ To show the window after it's been hidden:
 ## Troubleshooting
 
 ### Application Not Starting
-- Ensure Node.js is installed and is version 20.19.0 or higher
+- Ensure Node.js is installed and is version 18.19.0 
 - Check that all dependencies are installed with `npm install`
 - Verify that the `.env` file exists with a valid OpenAI API key
 
@@ -187,27 +187,3 @@ To show the window after it's been hidden:
 - Try positioning the window in a less noticeable area of the screen
 - Use the keyboard shortcuts to hide the window when not in use
 
-## FAQ
-
-### Is this application detectable during interviews?
-The application is designed to be invisible to most screen sharing and recording software. However, some newer versions of screen sharing applications may detect it. Always test with your specific interview platform before using it in a real interview.
-
-### Is this application ethical to use?
-The application is provided as an educational tool to help with technical interviews. It's up to you to determine whether using it aligns with the policies of the companies you're interviewing with. Many companies allow the use of reference materials during interviews, but some may have specific policies against external assistance.
-
-### How can I customize the AI responses?
-You can customize the AI responses by entering specific prompts in the Prompt tab. For example, you can ask for solutions in a specific programming language or request step-by-step explanations.
-
-### Does the application require internet access?
-Yes, the application requires internet access to communicate with the OpenAI API for analyzing problems and generating solutions.
-
-### How can I update the application?
-To update the application, pull the latest changes from the repository and rebuild:
-```bash
-git pull
-npm install
-npm run build
-```
-
-### Can I use this application on multiple computers?
-Yes, you can install and run the application on multiple computers. Each installation will require its own OpenAI API key in the `.env` file.
