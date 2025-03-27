@@ -33,7 +33,7 @@ interface StoreSchema {
 const store = new Store({
   defaults: {
     windowPosition: { x: 100, y: 100 },
-    windowSize: { width: 800, height: 600 },
+    windowSize: { width: 1600, height: 1200 },
     preferredLanguage: 'python'
   }
 });
@@ -388,7 +388,7 @@ ipcMain.on('move-window', (_event, direction) => {
   if (!mainWindow) return;
   
   const position = mainWindow.getPosition();
-  const step = 10; // pixels to move
+  const step = 200; // pixels to move
   
   let newX = position[0];
   let newY = position[1];
@@ -469,6 +469,19 @@ app.whenReady().then(() => {
   
   globalShortcut.register('CommandOrControl+Shift+Right', () => {
     ipcMain.emit('move-window', null, 'right');
+  });
+  
+  // Scroll window: Ctrl+Arrow keys
+  globalShortcut.register('CommandOrControl+Up', () => {
+    if (mainWindow) {
+      mainWindow.webContents.send('scroll-content', { direction: 'up' });
+    }
+  });
+  
+  globalShortcut.register('CommandOrControl+Down', () => {
+    if (mainWindow) {
+      mainWindow.webContents.send('scroll-content', { direction: 'down' });
+    }
   });
   
   // Process screenshots: Ctrl+Shift+P
