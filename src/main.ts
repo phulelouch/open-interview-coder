@@ -53,6 +53,7 @@ function createWindow() {
   const savedPosition = store.get('windowPosition');
   const savedSize = store.get('windowSize');
   
+  
   // Get screen dimensions
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width, height } = primaryDisplay.workAreaSize;
@@ -81,6 +82,9 @@ function createWindow() {
       nodeIntegration: false,
     }
   });
+  
+  // Immediately after creating the BrowserWindow:
+  mainWindow.setIgnoreMouseEvents(true, { forward: true });
 
   // Enhanced screen capture resistance
   mainWindow.setContentProtection(true);

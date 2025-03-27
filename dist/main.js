@@ -98,6 +98,8 @@ function createWindow() {
             nodeIntegration: false,
         }
     });
+    // Immediately after creating the BrowserWindow:
+    mainWindow.setIgnoreMouseEvents(true, { forward: true });
     // Enhanced screen capture resistance
     mainWindow.setContentProtection(true);
     mainWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
