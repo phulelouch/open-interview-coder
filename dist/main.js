@@ -241,7 +241,7 @@ electron_1.ipcMain.handle('analyze-screenshots', async (_event, options) => {
         const screenshots = [...screenshotQueue];
         const language = options.language || store.get('preferredLanguage') || 'python';
         // Build prompt for OpenAI
-        const promptText = `I'm taking a coding interview and need help with the following problem. Please analyze these screenshots and provide a solution in ${language}. First explain the problem, then provide a step-by-step solution with code examples.`;
+        const promptText = `I'm taking a coding interview and need help with the following problem. Please analyze these screenshots and provide a solution in ${language}. First explain the problem, then provide a step-by-step solution with code examples. But make it short and condense`;
         // Prepare message content array
         const messageContent = [
             { type: 'text', text: promptText }
