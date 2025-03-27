@@ -416,6 +416,7 @@ app.whenReady().then(() => {
   createWindow();
   log.info('Application started');
   console.log('Application started');
+  console.log('CMD/Control+Shift+A for showing up');
 
   // Register global shortcuts
   
