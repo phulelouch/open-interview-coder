@@ -98,8 +98,18 @@ function createWindow() {
             nodeIntegration: false,
         }
     });
-    // Immediately after creating the BrowserWindow:
-    mainWindow.setIgnoreMouseEvents(true, { forward: true });
+    // Keep track of the current ignore state
+    let isIgnoringMouseEvents = true;
+    // Register a new global shortcut for toggling
+    electron_1.globalShortcut.register('CommandOrControl+Shift+W', () => {
+        // Flip the ignore state
+        isIgnoringMouseEvents = !isIgnoringMouseEvents;
+        // Apply the updated ignore state to the main window
+        if (mainWindow) {
+            mainWindow.setIgnoreMouseEvents(isIgnoringMouseEvents, { forward: true });
+        }
+        console.log('Toggled mouse events ignoring:', isIgnoringMouseEvents);
+    });
     // Enhanced screen capture resistance
     mainWindow.setContentProtection(true);
     mainWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
