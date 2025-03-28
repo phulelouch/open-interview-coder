@@ -5,7 +5,6 @@
 https://github.com/user-attachments/assets/23365245-2f4b-4f9a-af44-5358402b0546
 
 
-![425749234-23365245-2f4b-4f9a-af44-5358402b0546](https://github.com/user-attachments/assets/c4566e65-73ed-4b1a-85bd-e401579959a1)
 
 
 
