@@ -5,8 +5,8 @@
   "main": "dist/main.js",
   "scripts": {
     "start": "electron dist/main.js",
-    "dev": "tsc && cp src/index.html dist/ && electron dist/main.js",
-    "build": "tsc && cp src/index.html dist/ && electron-builder",
+    "dev": "tsc && copy src/index.html dist/ && electron dist/main.js",
+    "build": "tsc && copy src\\index.html dist\\ && electron-builder",
     "clean": "rimraf dist"
   },
   "dependencies": {
@@ -14,6 +14,7 @@
     "electron-log": "^5.2.4",
     "electron-store": "^8.1.0",
     "node-fetch": "^2.6.11",
+    "open-interview-coder": "file:",
     "openai": "^4.28.0",
     "screenshot-desktop": "^1.15.0",
     "tailwindcss": "^3.4.15"
@@ -39,7 +40,9 @@
       {
         "from": "src",
         "to": "dist",
-        "filter": ["index.html"]
+        "filter": [
+          "index.html"
+        ]
       }
     ],
     "directories": {
