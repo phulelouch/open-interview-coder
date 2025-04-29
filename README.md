@@ -1,5 +1,7 @@
 # Open Interview Coder - Improved Version
 
+### For Windows, please use https://github.com/phulelouch/open-interview-coder/tree/window-version 
+
 
 
 https://github.com/user-attachments/assets/23365245-2f4b-4f9a-af44-5358402b0546
